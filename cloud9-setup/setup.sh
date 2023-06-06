@@ -13,7 +13,7 @@ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip
 unzip awscliv2.zip
 sudo ./aws/install
 
-echo "Installing jq, gettext, bash-completion, moreutils, pngcrush..."
+echo "Installing jq, gettext, bash-completion, moreutils, pngcrush, ImageMagick..."
 
 #if ubuntu use apt-get else use yum (amazon linux)
 if [ -x "$(command -v apt-get)" ]; then
@@ -29,7 +29,6 @@ echo 'yq() {
 
 echo "Enabling kubectl bash_completion..."
 kubectl completion bash >>  ~/.bash_completion
-echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 echo "Aliasing 'k' to 'kubectl'..."
 echo "alias k=kubectl" >> ~/.bashrc
