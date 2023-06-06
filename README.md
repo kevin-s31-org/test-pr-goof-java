@@ -1,92 +1,34 @@
-# Goof - Snyk's vulnerable demo app
+# Goof - Snyk's vulnerable demo app repo
 [![Known Vulnerabilities](https://snyk.io/test/github/snyk/goof/badge.svg?style=flat-square)](https://snyk.io/test/github/snyk/goof)
 
-A vulnerable Node.js demo application, based on the [Dreamers Lab tutorial](http://dreamerslab.com/blog/en/write-a-todo-list-with-express-and-mongodb/).
+Welcome to the Snyk "Goof" vulnerable demo application repo.
+This repository contains a pair of purposefully vulnerable applications used for the purpose of demonstrating Snyk's capabilities in finding and fixing vulnerabilities in your dependencies and container images.
+This repo is used as part of the AWS + Snyk workshop found [here](https://docker-snyk.awsworkshop.io/)
 
-## Features
+---
+## WARNING! | ACHTUNG! | ¡PRECAUCIÓN! | !AVERTISSEMENT!
+Many of the applications that are part of this workshop are **highly dangerous**
+and are purposely built with vulnerabilities! Please, **do not deploy these examples to
+clusters that you don't want to have attacked!**
 
-This vulnerable app includes the following capabilities to experiment with:
-* [Exploitable packages](#exploiting-the-vulnerabilities) with known vulnerabilities
-* [Docker Image Scanning](#docker-image-scanning) for base images with known vulnerabilities in system libraries
-* [Runtime alerts](#runtime-alerts) for detecting an invocation of vulnerable functions in open source dependencies
+In other words, only deploy these to local/sandboxed clusters for the sole purpose of experimentation.
+Examples of places you should **NOT** deploy this to:
+* your developer servers
+* your QA environment
+* your company's cloud account
 
-## Running
-```bash
-mongod &
+We take no responsibility for exploitation or damages caused by deploying anything from this
+repository (or the associated container images) to your personal or organization's infrastructure (private or public).
 
-git clone https://github.com/Snyk/snyk-demo-todo
-npm install
-npm start
-```
-This will run Goof locally, using a local mongo on the default port and listening on port 3001 (http://localhost:3001)
+## You have been warned!
 
-## Running with docker-compose
-```bash
-docker-compose up --build
-docker-compose down
-```
+---
 
-### Heroku usage
-Goof requires attaching a MongoLab service to be deployed as a Heroku app. 
-That sets up the MONGOLAB_URI env var so everything after should just work. 
+### Contents
+Applications included in this repo:
+* [thumbnailer](thumbnailer) - Python application deployed in a container who's base image contains a vulnerable version of ImageMagick.
+* [todolist](todolist) - Java JEE application with many vulnerable dependencies, including the Log4Shell vulnerability and an implementation of a malicous LDAP server for exploting it.
 
-### CloudFoundry usage
-Goof requires attaching a MongoLab service and naming it "goof-mongo" to be deployed on CloudFoundry. 
-The code explicitly looks for credentials to that service. 
+_Note: This README is a WIP, and will be updated with more information soon._
 
-### Cleanup
-To bulk delete the current list of TODO items from the DB run:
-```bash
-npm run cleanup
-```
 
-## Exploiting the vulnerabilities
-
-This app uses npm dependencies holding known vulnerabilities.
-
-Here are the exploitable vulnerable packages:
-- [Mongoose - Buffer Memory Exposure](https://snyk.io/vuln/npm:mongoose:20160116)
-- [st - Directory Traversal](https://snyk.io/vuln/npm:st:20140206)
-- [ms - ReDoS](https://snyk.io/vuln/npm:ms:20151024)
-- [marked - XSS](https://snyk.io/vuln/npm:marked:20150520)
-
-The `exploits/` directory includes a series of steps to demonstrate each one.
-
-## Docker Image Scanning
-
-The `Dockerfile` makes use of a base image (`node:6-stretch`) that is known to have system libraries with vulnerabilities.
-
-To scan the image for vulnerabilities, run:
-```bash
-snyk test --docker node:6-stretch --file=Dockerfile
-```
-
-To monitor this image and receive alerts with Snyk:
-```bash
-snyk monitor --docker node:6-stretch
-```
-
-## Runtime Alerts
-
-Snyk provides the ability to monitor application runtime behavior and detect an invocation of a function is known to be vulnerable and used within open source dependencies that the application makes use of.
-
-The agent is installed and initialized in [app.js](./app.js#L5).
-
-For the agent to report back to your snyk account on the vulnerabilities it detected it needs to know which project on Snyk to associate with the monitoring. Due to that, we need to provide it with the project id through an environment variable `SNYK_PROJECT_ID`
-
-To run the Node.js app with runtime monitoring:
-```bash
-SNYK_PROJECT_ID=<PROJECT_ID> npm start
-```
-
-** The app will continue to work normally even if not provided a project id
-
-## Fixing the issues
-To find these flaws in this application (and in your own apps), run:
-```
-npm install -g snyk
-snyk wizard
-```
-
-In this application, the default `snyk wizard` answers will fix all the issues.
-When the wizard is done, restart the application and run the exploits again to confirm they are fixed.
